@@ -42,7 +42,7 @@ namespace ErrorHandling.Middlewares
 				connection.Open();
 				using (var command = new SqlCommand("INSERT INTO LogError ([MessageError],[Url],[CreatedTime]) VALUES (@ErrorMessage, @Url, @CreatedTime)", connection))
 				{
-					command.Parameters.AddWithValue("@ErrorMessage", ex.Message);
+					command.Parameters.AddWithValue("@ErrorMessage", $"Error : {ex.Message}\n StackTrace : {ex.StackTrace}");
 					command.Parameters.AddWithValue("@Url", url);
 					command.Parameters.AddWithValue("@CreatedTime", DateTime.Now);
 					command.ExecuteNonQuery();
