@@ -23,15 +23,19 @@ namespace ErrorHandling.Middlewares
 			}
 			catch (Exception ex)
 			{
+				var statusCode = StatusCodes.Status500InternalServerError;
 				var url = $"{context.Request.Path}{context.Request.QueryString}";
 
 				_logger.LogError(ex, "An error occurred");
 
-				// Save error to SQL Server database
-				SaveErrorToDatabase(ex, url);
+				if(ex is MethodAccessException)
+					statusCode = StatusCodes.Status405MethodNotAllowed;
+				else
+					// Save error to SQL Server database
+					SaveErrorToDatabase(ex, url);
 
-				context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-				await context.Response.WriteAsync("Internal server error");
+				context.Response.StatusCode = statusCode;
+				await context.Response.WriteAsync(ex.Message);
 			}
 		}
 

@@ -26,6 +26,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandlingMiddleware>(configuration.GetConnectionString("DefaultConnection"));
 
+app.UseMiddleware<AccessMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
