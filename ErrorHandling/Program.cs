@@ -1,6 +1,36 @@
 using ErrorHandling.Middlewares;
+using Microsoft.AspNetCore.HttpLogging;
+using static System.Net.WebRequestMethods;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpLogging(logging =>
+{
+	// Customize HTTP logging here.
+	logging.LoggingFields = HttpLoggingFields.All;
+	logging.RequestHeaders.Add("My-Request-Header");
+	logging.ResponseHeaders.Add("My-Response-Header");
+	logging.MediaTypeOptions.AddText("application/javascript");
+	logging.RequestBodyLogLimit = 4096;
+	logging.ResponseBodyLogLimit = 4096;
+});
+
+// Sample Result
+// info: Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware[1]
+// 	  Request:
+// Protocol: HTTP / 1.1
+// 	  Method: GET
+// 	  Scheme: https
+// 	  PathBase:
+//       Path: /
+// 	  QueryString:
+//       Connection: keep - alive
+// 	  Accept: */*
+//       Accept-Encoding: gzip, deflate, br
+//       Host: localhost:5001
+//       User-Agent: PostmanRuntime/7.26.5
+//       My-Request-Header: blogpost-sample
+//       Postman-Token: [Redacted]
 
 // Get Config
 var configuration = new ConfigurationBuilder()
@@ -31,6 +61,8 @@ app.UseMiddleware<AccessMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseHttpLogging();
 
 app.MapControllers();
 
